@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Quest - Quest Gamification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/dashboard}">Quest Gamification</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Create New Quest</h2>
+        <form th:action="@{/quests/create}" th:object="${questCreateDto}" method="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="questType" class="form-label">Quest Type</label>
+                <select class="form-select" id="questType" th:field="*{questType}" required>
+                    <option value="">Select type</option>
+                    <option value="DAILY">Daily</option>
+                    <option value="WEEKLY">Weekly</option>
+                </select>
+                <div th:if="${#fields.hasErrors('questType')}" th:errors="*{questType}" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="experienceReward" class="form-label">Experience Reward</label>
+                <input type="number" class="form-control" id="experienceReward" th:field="*{experienceReward}" min="1" required>
+                <div th:if="${#fields.hasErrors('experienceReward')}" th:errors="*{experienceReward}" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="startDate" th:field="*{startDate}" required>
+                <div th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="endDate" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="endDate" th:field="*{endDate}" required>
+                <div th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="text-danger"></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Quest</button>
+            <a th:href="@{/quests/my-quests}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
+
