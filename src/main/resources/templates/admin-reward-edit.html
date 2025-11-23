@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Edit Reward - Admin - Quest Gamification</title>
+    <div th:replace="~{layout :: head_dependencies}"></div>
+</head>
+<body>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <div th:replace="~{layout :: topbar}"></div>
+    <main class="main-content">
+        <div th:replace="~{layout :: alerts}"></div>
+        
+        <div class="page-header">
+            <h1><i class="bi bi-pencil"></i> Edit Reward</h1>
+            <p class="lead">Update reward information</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/admin/rewards/{id}/edit(id=${rewardId})}" th:object="${rewardCreateDto}" method="post">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="name" class="form-label">
+                                <i class="bi bi-tag"></i> Reward Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Enter reward name" required>
+                            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
+                            <small class="form-text text-muted">3-200 characters</small>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">
+                                <i class="bi bi-card-text"></i> Description
+                            </label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="3" placeholder="Enter reward description (optional)"></textarea>
+                            <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger small"></div>
+                            <small class="form-text text-muted">Max 500 characters</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="requiredLevel" class="form-label">
+                                <i class="bi bi-star"></i> Required Level <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="requiredLevel" th:field="*{requiredLevel}" min="1" placeholder="1" required>
+                            <div th:if="${#fields.hasErrors('requiredLevel')}" th:errors="*{requiredLevel}" class="text-danger small"></div>
+                            <small class="form-text text-muted">Minimum level required to claim this reward</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="requiredExperience" class="form-label">
+                                <i class="bi bi-star-fill"></i> Required Experience Points <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="requiredExperience" th:field="*{requiredExperience}" min="1" placeholder="100" required>
+                            <div th:if="${#fields.hasErrors('requiredExperience')}" th:errors="*{requiredExperience}" class="text-danger small"></div>
+                            <small class="form-text text-muted">Minimum XP required to claim this reward</small>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Update Reward
+                        </button>
+                        <a th:href="@{/admin/rewards}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>
+

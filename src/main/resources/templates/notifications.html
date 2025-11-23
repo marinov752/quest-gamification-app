@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Notifications - Quest Gamification</title>
+    <div th:replace="~{layout :: head_dependencies}"></div>
+</head>
+<body>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <div th:replace="~{layout :: topbar}"></div>
+    <main class="main-content">
+        <div th:replace="~{layout :: alerts}"></div>
+        
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-bell"></i> Notifications</h1>
+                <p class="lead mb-0">Stay updated with your quest reminders and achievements</p>
+            </div>
+            <div th:if="${unreadCount != null && unreadCount > 0}">
+                <form th:action="@{/notifications/read-all}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-check-all"></i> Mark All as Read (<span th:text="${unreadCount}">0</span> unread)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <div th:if="${notifications == null || notifications.isEmpty()}" class="empty-state">
+                    <i class="bi bi-bell-slash" style="font-size: 3rem; color: var(--text-secondary);"></i>
+                    <p class="mt-3">No notifications yet. You'll see quest reminders and updates here!</p>
+                </div>
+                
+                <div th:if="${notifications != null && !notifications.isEmpty()}">
+                    <div class="list-group">
+                        <div th:each="notification : ${notifications}" 
+                             class="list-group-item list-group-item-action"
+                             th:classappend="${notification.isRead != null && !notification.isRead} ? 'list-group-item-warning' : ''">
+                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i th:if="${notification.type != null and notification.type.name() == 'QUEST_COMPLETED'}" 
+                                           class="bi bi-check-circle-fill text-success me-2" style="font-size: 1.5rem;"></i>
+                                        <i th:if="${notification.type != null and notification.type.name() == 'QUEST_EXPIRED'}" 
+                                           class="bi bi-x-circle-fill text-danger me-2" style="font-size: 1.5rem;"></i>
+                                        <i th:if="${notification.type != null and notification.type.name() == 'QUEST_EXPIRING_SOON'}" 
+                                           class="bi bi-exclamation-triangle-fill text-warning me-2" style="font-size: 1.5rem;"></i>
+                                        <i th:if="${notification.type != null and notification.type.name() == 'QUEST_REMINDER'}" 
+                                           class="bi bi-clock-fill text-info me-2" style="font-size: 1.5rem;"></i>
+                                        <i th:if="${notification.type == null or (notification.type.name() != 'QUEST_COMPLETED' and notification.type.name() != 'QUEST_EXPIRED' and notification.type.name() != 'QUEST_EXPIRING_SOON' and notification.type.name() != 'QUEST_REMINDER')}" 
+                                           class="bi bi-info-circle text-primary me-2" style="font-size: 1.5rem;"></i>
+                                        <h5 class="mb-0" th:text="${notification.message ?: 'No message'}">Notification message</h5>
+                                        <span th:if="${notification.isRead == null or notification.isRead == false}" class="badge bg-primary ms-2">New</span>
+                                    </div>
+                                    <p class="mb-1 text-muted" th:if="${notification.createdAt != null}">
+                                        <small>
+                                            <i class="bi bi-clock"></i> 
+                                            <span th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                        </small>
+                                    </p>
+                                    <div th:if="${notification.quest != null && notification.quest.id != null}" class="mt-2">
+                                        <a th:href="@{/quests/{id}(id=${notification.quest.id})}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View Quest
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <form th:if="${notification.isRead == null || !notification.isRead}" 
+                                          th:action="@{/notifications/{id}/read(id=${notification.id})}" 
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Mark as read">
+                                            <i class="bi bi-check"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/notifications/{id}/delete(id=${notification.id})}" 
+                                          method="post" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this notification?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{layout :: scripts}"></div>
+    <script>
+        // Auto-mark notifications as read when page is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notifications are already marked as read by the controller
+            // This is just a visual confirmation
+            console.log('Notifications page loaded - all notifications marked as read');
+        });
+    </script>
+</body>
+</html>
+

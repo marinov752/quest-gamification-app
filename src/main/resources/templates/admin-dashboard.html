@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Admin Dashboard - Quest Gamification</title>
+    <div th:replace="~{layout :: head_dependencies}"></div>
+</head>
+<body>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <div th:replace="~{layout :: topbar}"></div>
+    <main class="main-content">
+        <div th:replace="~{layout :: alerts}"></div>
+        <div class="page-header">
+            <h1><i class="bi bi-shield-check"></i> Admin Dashboard</h1>
+            <p class="mb-0">System Overview and Management</p>
+        </div>
+
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="stats-card">
+                        <i class="bi bi-people-fill text-primary" style="font-size: 2.5rem;"></i>
+                        <div class="stats-value" th:text="${stats['totalUsers']}">0</div>
+                        <div class="stats-label">Total Users</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stats-card">
+                        <i class="bi bi-list-check text-info" style="font-size: 2.5rem;"></i>
+                        <div class="stats-value" th:text="${stats['totalQuests']}">0</div>
+                        <div class="stats-label">Total Quests</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stats-card">
+                        <i class="bi bi-gift-fill text-warning" style="font-size: 2.5rem;"></i>
+                        <div class="stats-value" th:text="${stats['totalRewards']}">0</div>
+                        <div class="stats-label">Total Rewards</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stats-card">
+                        <i class="bi bi-trophy-fill text-success" style="font-size: 2.5rem;"></i>
+                        <div class="stats-value" th:text="${stats['totalAchievements']}">0</div>
+                        <div class="stats-label">Total Achievements</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-check-circle"></i> Quest Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <strong>Active:</strong> <span class="badge bg-success" th:text="${stats['activeQuests']}">0</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Completed:</strong> <span class="badge bg-primary" th:text="${stats['completedQuests']}">0</span>
+                            </div>
+                            <div>
+                                <strong>Expired:</strong> <span class="badge bg-secondary" th:text="${stats['expiredQuests']}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-gear"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <a th:href="@{/admin/users}" class="btn btn-primary w-100">
+                                        <i class="bi bi-people"></i> Manage Users
+                                    </a>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a th:href="@{/admin/quests}" class="btn btn-info w-100">
+                                        <i class="bi bi-list-check"></i> Manage Quests
+                                    </a>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a th:href="@{/admin/rewards}" class="btn btn-warning w-100">
+                                        <i class="bi bi-gift"></i> Manage Rewards
+                                    </a>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a th:href="@{/achievements}" class="btn btn-success w-100">
+                                        <i class="bi bi-trophy"></i> View Achievements
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+</html>
+
