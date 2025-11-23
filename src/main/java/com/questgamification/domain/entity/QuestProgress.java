@@ -24,6 +24,7 @@ public class QuestProgress {
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
 
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quest_id", nullable = false)

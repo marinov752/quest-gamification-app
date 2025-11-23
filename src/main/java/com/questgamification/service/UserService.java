@@ -23,10 +23,12 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AchievementService achievementService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AchievementService achievementService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.achievementService = achievementService;
     }
 
     @Transactional
@@ -52,10 +54,17 @@ public class UserService {
         user.setLevel(1);
         user.setExperiencePoints(0L);
         user.setRoles(new HashSet<>());
-        user.getRoles().add(Role.USER);
+        
+        long userCount = userRepository.count();
+        if (userCount == 0) {
+            user.getRoles().add(Role.ADMIN);
+            logger.info("First user registered - assigning ADMIN role");
+        } else {
+            user.getRoles().add(Role.USER);
+        }
 
         User savedUser = userRepository.save(user);
-        logger.info("User registered successfully with ID: {}", savedUser.getId());
+        logger.info("User registered successfully with ID: {} and role: {}", savedUser.getId(), savedUser.getRoles());
         return savedUser;
     }
 
@@ -81,7 +90,17 @@ public class UserService {
             user.setLevel(newLevel);
         }
         
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        
+        try {
+            achievementService.checkAndAwardAchievements(savedUser);
+            savedUser = userRepository.save(savedUser);
+        } catch (Exception e) {
+            logger.warn("Failed to check achievements after XP/level change for user {}: {}", 
+                user.getUsername(), e.getMessage());
+        }
+        
+        return savedUser;
     }
 
     @Transactional

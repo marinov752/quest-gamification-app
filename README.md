@@ -95,12 +95,24 @@ Quest Gamification App is a web application that allows users to turn real-life 
 - PostgreSQL 12+
 
 ### Database Setup
-1. Create PostgreSQL database:
+
+**Automatic Database Creation:**
+The application will automatically create the database if it doesn't exist when you first run it. You just need to:
+1. Make sure PostgreSQL is running
+2. Ensure the `postgres` user has permission to create databases
+3. Run the application - the database will be created automatically
+
+**Manual Database Setup (if automatic creation fails):**
+If automatic creation fails, you can create the database manually:
 ```sql
 CREATE DATABASE quest_gamification_db;
 ```
 
-2. Update `application.yml` with your database credentials if needed.
+**Schema Creation:**
+The database schema (tables, columns, etc.) is automatically created/updated by Hibernate when the application starts (configured via `ddl-auto: update`).
+
+**Update Configuration:**
+Update `application.yml` with your database credentials if needed (default: username=`postgres`, password=`postgres`).
 
 ### Running the Application
 1. Clone the repository

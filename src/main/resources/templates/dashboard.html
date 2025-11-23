@@ -1,68 +1,119 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
     <title>Dashboard - Quest Gamification</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <div th:replace="~{layout :: head_dependencies}"></div>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/}">Quest Gamification</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" th:href="@{/profile}">Profile</a>
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-link nav-link">Logout</button>
-                </form>
+    <div th:replace="~{layout :: sidebar}"></div>
+    <div th:replace="~{layout :: topbar}"></div>
+    
+    <main class="main-content">
+        <div th:replace="~{layout :: alerts}"></div>
+        
+        <div class="page-header">
+            <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+            <p class="lead">Welcome back! Here's your quest progress overview.</p>
+        </div>
+
+        <div class="quick-checkin-section" th:if="${readyForCheckIn != null && !readyForCheckIn.isEmpty()}">
+            <div class="quick-checkin-header">
+                <i class="bi bi-check-circle-fill" style="font-size: 1.5rem; color: #28a745;"></i>
+                <h3>Quick Check-In</h3>
+            </div>
+            <p class="text-muted mb-3">You can check in to these quests right now:</p>
+            <div th:each="quest : ${readyForCheckIn}">
+                <div class="quick-checkin-item">
+                    <div class="quick-checkin-info">
+                        <div class="quick-checkin-title" th:text="${quest.title}">Quest Title</div>
+                        <div class="quick-checkin-meta">
+                            <span class="badge bg-info me-2" th:text="${quest.questType}">DAILY</span>
+                            <span th:if="${quest.questType == T(com.questgamification.domain.entity.QuestType).DAILY}">
+                                <i class="bi bi-calendar-check"></i> Check in today
+                            </span>
+                            <span th:if="${quest.questType == T(com.questgamification.domain.entity.QuestType).WEEKLY}">
+                                <i class="bi bi-calendar-week"></i> Check in this week
+                            </span>
+                            <span class="ms-2">
+                                <i class="bi bi-star"></i> 
+                                <span th:text="${quest.experienceReward / quest.checkInGoal}"></span> XP
+                            </span>
+                        </div>
+                    </div>
+                    <form th:action="@{/quests/{id}/quick-check-in(id=${quest.id}, returnTo='/dashboard')}" method="post" class="d-inline">
+                        <button type="submit" class="btn-quick-checkin">
+                            <i class="bi bi-check-circle"></i>
+                            Check In
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </nav>
 
-    <div class="container mt-4">
-        <h1>Dashboard</h1>
         <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Level</h5>
-                        <h2 th:text="${user.level}">1</h2>
-                    </div>
+            <div class="col-md-4 mb-4">
+                <div class="stats-card">
+                    <div class="stats-label">Level</div>
+                    <div class="stats-value" th:text="${user.level}">1</div>
+                    <i class="bi bi-trophy" style="font-size: 2rem; color: #ffc107;"></i>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Experience Points</h5>
-                        <h2 th:text="${user.experiencePoints}">0</h2>
-                    </div>
+            <div class="col-md-4 mb-4">
+                <div class="stats-card">
+                    <div class="stats-label">Experience Points</div>
+                    <div class="stats-value" th:text="${user.experiencePoints}">0</div>
+                    <i class="bi bi-star" style="font-size: 2rem; color: #17a2b8;"></i>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Active Quests</h5>
-                        <h2 th:text="${#lists.size(activeQuests)}">0</h2>
-                    </div>
+            <div class="col-md-4 mb-4">
+                <div class="stats-card">
+                    <div class="stats-label">Active Quests</div>
+                    <div class="stats-value" th:text="${#lists.size(activeQuests)}">0</div>
+                    <i class="bi bi-list-check" style="font-size: 2rem; color: #800080;"></i>
                 </div>
             </div>
         </div>
 
-        <div class="mt-4">
-            <h3>Active Quests</h3>
-            <a th:href="@{/quests/create}" class="btn btn-primary mb-3">Create New Quest</a>
-            <div class="row">
-                <div class="col-md-6 mb-3" th:each="quest : ${activeQuests}">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${quest.title}"></h5>
-                            <p class="card-text" th:text="${quest.description}"></p>
-                            <a th:href="@{/quests/{id}(id=${quest.id})}" class="btn btn-sm btn-primary">View Details</a>
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="bi bi-arrow-repeat"></i> All Active Quests</h3>
+                <a th:href="@{/quests/create}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New Quest
+                </a>
+            </div>
+            <div class="card-body">
+                <div th:if="${activeQuests == null || activeQuests.isEmpty()}" class="empty-state">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-secondary);"></i>
+                    <p class="mt-3">No active quests yet. Create your first quest to get started!</p>
+                    <a th:href="@{/quests/create}" class="btn btn-primary mt-2">
+                        <i class="bi bi-plus-circle"></i> Create Quest
+                    </a>
+                </div>
+                <div class="row" th:if="${activeQuests != null && !activeQuests.isEmpty()}">
+                    <div class="col-md-6 mb-3" th:each="quest : ${activeQuests}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-flag"></i> <span th:text="${quest.title}"></span>
+                                </h5>
+                                <p class="card-text text-muted" th:text="${quest.description ?: 'No description'}"></p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> 
+                                        Ends: <span th:text="${#temporals.format(quest.endDate, 'dd/MM/yyyy')}"></span>
+                                    </small>
+                                    <a th:href="@{/quests/{id}(id=${quest.id})}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View Details
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+    
+    <div th:replace="~{layout :: scripts}"></div>
 </body>
 </html>
-

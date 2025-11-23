@@ -17,6 +17,9 @@ public interface QuestAnalyticsClient {
     @PutMapping("/api/analytics/user-stats")
     void updateUserStatistics(@RequestBody UserStatsUpdateDto statsDto);
 
+    @org.springframework.web.bind.annotation.DeleteMapping("/api/analytics/user/{userId}")
+    void deleteAnalyticsData(@org.springframework.web.bind.annotation.PathVariable java.util.UUID userId);
+
     @org.springframework.web.bind.annotation.GetMapping("/api/analytics/user/{userId}")
     java.util.Map<String, Object> getAnalyticsData(@org.springframework.web.bind.annotation.PathVariable java.util.UUID userId);
 }

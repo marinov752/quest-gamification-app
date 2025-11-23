@@ -17,9 +17,11 @@ public class AchievementService {
 
     private static final Logger logger = LoggerFactory.getLogger(AchievementService.class);
     private final AchievementRepository achievementRepository;
+    private final NotificationService notificationService;
 
-    public AchievementService(AchievementRepository achievementRepository) {
+    public AchievementService(AchievementRepository achievementRepository, NotificationService notificationService) {
         this.achievementRepository = achievementRepository;
+        this.notificationService = notificationService;
     }
 
     @Cacheable(value = "achievements")
@@ -47,7 +49,7 @@ public class AchievementService {
             switch (achievement.getAchievementType()) {
                 case QUESTS_COMPLETED:
                     shouldAward = user.getQuests().stream()
-                        .filter(q -> q.getStatus().name().equals("COMPLETED"))
+                        .filter(q -> q.getStatus() == com.questgamification.domain.entity.QuestStatus.COMPLETED)
                         .count() >= achievement.getRequirementValue();
                     break;
                 case TOTAL_XP_EARNED:
@@ -56,12 +58,22 @@ public class AchievementService {
                 case LEVEL_REACHED:
                     shouldAward = user.getLevel() >= achievement.getRequirementValue();
                     break;
+                default:
+                    logger.debug("Achievement type {} not handled", achievement.getAchievementType());
+                    break;
             }
 
             if (shouldAward) {
                 user.getAchievements().add(achievement);
                 achievement.getUsers().add(user);
                 logger.info("Achievement '{}' awarded to user {}", achievement.getName(), user.getUsername());
+                
+                try {
+                    notificationService.createAchievementUnlockedNotification(user, achievement);
+                } catch (Exception e) {
+                    logger.error("Failed to create achievement notification for user {} and achievement {}: {}", 
+                        user.getUsername(), achievement.getName(), e.getMessage(), e);
+                }
             }
         }
     }

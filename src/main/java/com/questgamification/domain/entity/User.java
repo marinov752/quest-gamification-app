@@ -49,6 +49,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<QuestProgress> questProgresses = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Notification> notifications = new HashSet<>();
+
     @ManyToMany
     @JoinTable(
         name = "user_achievements",
@@ -154,6 +157,14 @@ public class User {
 
     public void setClaimedRewards(Set<Reward> claimedRewards) {
         this.claimedRewards = claimedRewards;
+    }
+
+    public Set<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Set<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
 

@@ -32,6 +32,12 @@ public class QuestCreateDto {
     @Future
     private LocalDate endDate;
 
+    @NotNull
+    @Positive
+    private Integer checkInGoal;
+
+    private java.util.List<java.util.UUID> rewardIds;
+
     public QuestCreateDto() {
     }
 
@@ -81,6 +87,22 @@ public class QuestCreateDto {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public Integer getCheckInGoal() {
+        return checkInGoal;
+    }
+
+    public void setCheckInGoal(Integer checkInGoal) {
+        this.checkInGoal = checkInGoal;
+    }
+
+    public java.util.List<java.util.UUID> getRewardIds() {
+        return rewardIds;
+    }
+
+    public void setRewardIds(java.util.List<java.util.UUID> rewardIds) {
+        this.rewardIds = rewardIds;
     }
 }
 

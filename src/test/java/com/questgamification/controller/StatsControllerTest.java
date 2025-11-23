@@ -1,3 +1,4 @@
+// src/test/java/com/questgamification/controller/StatsControllerTest.java
 package com.questgamification.controller;
 
 import com.questgamification.domain.entity.User;
@@ -34,8 +35,16 @@ class StatsControllerTest {
         User user = new User();
         user.setId(UUID.randomUUID());
 
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("level", 5);
+        stats.put("experiencePoints", 1000L);
+        stats.put("totalQuests", 10);
+        stats.put("completedQuests", 5L);
+        stats.put("activeQuests", 3L);
+        stats.put("achievementsCount", 2);
+
         when(userService.findByUsername("user")).thenReturn(Optional.of(user));
-        when(statsService.getUserStats(any(User.class))).thenReturn(new HashMap<>());
+        when(statsService.getUserStats(any(User.class))).thenReturn(stats);
         when(statsService.getAnalyticsData(any(UUID.class))).thenReturn(new HashMap<>());
 
         mockMvc.perform(get("/stats"))

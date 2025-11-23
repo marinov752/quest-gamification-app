@@ -32,11 +32,14 @@ public class DashboardController {
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
         
         List<com.questgamification.domain.entity.Quest> activeQuests = questService.findByUserAndStatus(user, QuestStatus.ACTIVE);
+        List<com.questgamification.domain.entity.Quest> readyForCheckIn = questService.getQuestsReadyForCheckIn(user);
         Map<String, Object> stats = statsService.getUserStats(user);
         
         model.addAttribute("user", user);
         model.addAttribute("activeQuests", activeQuests);
+        model.addAttribute("readyForCheckIn", readyForCheckIn);
         model.addAttribute("stats", stats);
+        model.addAttribute("pageTitle", "Dashboard");
         
         return "dashboard";
     }

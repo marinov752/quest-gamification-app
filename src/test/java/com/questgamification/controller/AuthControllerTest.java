@@ -1,5 +1,6 @@
 package com.questgamification.controller;
 
+import com.questgamification.config.TestSecurityConfig;
 import com.questgamification.domain.dto.UserRegistrationDto;
 import com.questgamification.domain.entity.User;
 import com.questgamification.service.UserService;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthController.class)
+@Import(TestSecurityConfig.class)
 class AuthControllerTest {
 
     @Autowired
@@ -26,7 +28,6 @@ class AuthControllerTest {
     private UserService userService;
 
     @Test
-    @WithAnonymousUser
     void testLoginPage() throws Exception {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
@@ -34,7 +35,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithAnonymousUser
     void testRegisterPage() throws Exception {
         mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
@@ -43,7 +43,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithAnonymousUser
     void testRegisterPost_Success() throws Exception {
         User user = new User();
         when(userService.registerUser(any(UserRegistrationDto.class))).thenReturn(user);

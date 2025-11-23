@@ -1,5 +1,6 @@
 package com.questgamification.controller;
 
+import com.questgamification.domain.entity.Reward;
 import com.questgamification.domain.entity.User;
 import com.questgamification.service.RewardService;
 import com.questgamification.service.UserService;
@@ -11,7 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/rewards")
@@ -30,8 +34,20 @@ public class RewardController {
     public String rewards(Model model, Authentication authentication) {
         User user = userService.findByUsername(authentication.getName())
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        model.addAttribute("availableRewards", rewardService.getAvailableRewards(user.getLevel()));
+        
+        List<Reward> allAvailableRewards = rewardService.getAvailableRewards(user.getLevel());
+        
+        Set<UUID> claimedRewardIds = user.getClaimedRewards().stream()
+            .map(Reward::getId)
+            .collect(Collectors.toSet());
+        
+        List<Reward> availableRewards = allAvailableRewards.stream()
+            .filter(reward -> !claimedRewardIds.contains(reward.getId()))
+            .collect(Collectors.toList());
+        
+        model.addAttribute("availableRewards", availableRewards);
         model.addAttribute("claimedRewards", user.getClaimedRewards());
+        model.addAttribute("user", user);
         return "rewards";
     }
 
@@ -42,8 +58,11 @@ public class RewardController {
         try {
             User user = userService.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            
             rewardService.claimReward(id, user);
+            
             userService.updateUser(user);
+            
             redirectAttributes.addFlashAttribute("success", "Reward claimed successfully!");
             return "redirect:/rewards";
         } catch (IllegalArgumentException e) {

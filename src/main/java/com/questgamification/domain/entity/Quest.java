@@ -52,12 +52,28 @@ public class Quest {
     private LocalDate endDate;
 
     @NotNull
+    @Positive
+    @Column(nullable = false)
+    private Integer checkInGoal; // Number of check-ins required to complete the quest
+
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "quest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<QuestProgress> progressRecords = new HashSet<>();
+
+    @OneToMany(mappedBy = "quest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<com.questgamification.domain.entity.CheckIn> checkIns = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "quest_rewards",
+        joinColumns = @JoinColumn(name = "quest_id"),
+        inverseJoinColumns = @JoinColumn(name = "reward_id")
+    )
+    private Set<Reward> rewards = new HashSet<>();
 
     public Quest() {
     }
@@ -126,6 +142,14 @@ public class Quest {
         this.endDate = endDate;
     }
 
+    public Integer getCheckInGoal() {
+        return checkInGoal;
+    }
+
+    public void setCheckInGoal(Integer checkInGoal) {
+        this.checkInGoal = checkInGoal;
+    }
+
     public User getUser() {
         return user;
     }
@@ -140,6 +164,22 @@ public class Quest {
 
     public void setProgressRecords(Set<QuestProgress> progressRecords) {
         this.progressRecords = progressRecords;
+    }
+
+    public Set<Reward> getRewards() {
+        return rewards;
+    }
+
+    public void setRewards(Set<Reward> rewards) {
+        this.rewards = rewards;
+    }
+
+    public Set<com.questgamification.domain.entity.CheckIn> getCheckIns() {
+        return checkIns;
+    }
+
+    public void setCheckIns(Set<com.questgamification.domain.entity.CheckIn> checkIns) {
+        this.checkIns = checkIns;
     }
 }
 

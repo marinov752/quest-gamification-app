@@ -1,30 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Progress - Quest Gamification</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/dashboard}">Quest Gamification</a>
-        </div>
-    </nav>
-
+    <div th:replace="~{layout :: navbar}"></div>
+    
     <div class="container mt-4">
-        <h2>Update Progress: <span th:text="${quest.title}"></span></h2>
-        <form th:action="@{/quests/update-progress}" th:object="${progressDto}" method="post">
-            <input type="hidden" th:field="*{questId}">
-            <div class="mb-3">
-                <label for="progressPercentage" class="form-label">Progress (%)</label>
-                <input type="number" class="form-control" id="progressPercentage" th:field="*{progressPercentage}" min="0" max="100" required>
-                <div th:if="${#fields.hasErrors('progressPercentage')}" th:errors="*{progressPercentage}" class="text-danger"></div>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div class="fade-in">
+            <div class="page-header">
+                <h1><i class="bi bi-arrow-up-circle"></i> Update Progress: <span th:text="${quest.title}"></span></h1>
             </div>
-            <button type="submit" class="btn btn-primary">Update Progress</button>
-            <a th:href="@{/quests/{id}(id=${quest.id})}" class="btn btn-secondary">Cancel</a>
-        </form>
+
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{/quests/update-progress}" th:object="${progressDto}" method="post">
+                        <input type="hidden" th:field="*{questId}">
+                        <div class="mb-4">
+                            <label for="progressPercentage" class="form-label">
+                                <i class="bi bi-percent"></i> Progress (%)
+                            </label>
+                            <input type="number" class="form-control form-control-lg" id="progressPercentage" 
+                                   th:field="*{progressPercentage}" min="0" max="100" required>
+                            <div class="form-text">Enter a value between 0 and 100. Setting it to 100 will complete the quest.</div>
+                            <div th:if="${#fields.hasErrors('progressPercentage')}" th:errors="*{progressPercentage}" class="text-danger small"></div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Update Progress
+                            </button>
+                            <a th:href="@{/quests/{id}(id=${quest.id})}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div th:replace="~{layout :: scripts}"></div>
 </body>
 </html>
-

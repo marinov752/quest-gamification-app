@@ -29,11 +29,20 @@ public class StatsService {
 
     @Cacheable(value = "stats", key = "'user_' + #user.id")
     public Map<String, Object> getUserStats(User user) {
-        logger.info("Retrieving stats for user {}", user.getUsername());
+        logger.info("Retrieving stats for user {} (ID: {})", user.getUsername(), user.getId());
 
         List<Quest> allQuests = questRepository.findByUser(user);
+        logger.debug("Found {} quests for user {}", allQuests.size(), user.getUsername());
+        
         long completedQuests = allQuests.stream()
-                .filter(q -> q.getStatus() == QuestStatus.COMPLETED)
+                .filter(q -> {
+                    QuestStatus status = q.getStatus();
+                    boolean isCompleted = status == QuestStatus.COMPLETED;
+                    if (isCompleted) {
+                        logger.debug("Found completed quest: {} - {}", q.getId(), q.getTitle());
+                    }
+                    return isCompleted;
+                })
                 .count();
         long activeQuests = allQuests.stream()
                 .filter(q -> q.getStatus() == QuestStatus.ACTIVE)
@@ -41,6 +50,9 @@ public class StatsService {
         long expiredQuests = allQuests.stream()
                 .filter(q -> q.getStatus() == QuestStatus.EXPIRED)
                 .count();
+
+        logger.info("Stats for user {}: total={}, completed={}, active={}, expired={}", 
+                    user.getUsername(), allQuests.size(), completedQuests, activeQuests, expiredQuests);
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("level", user.getLevel());
@@ -57,6 +69,16 @@ public class StatsService {
 
     public Map<String, Object> getAnalyticsData(UUID userId) {
         logger.info("Retrieving analytics data for user {}", userId);
-        return questAnalyticsClient.getAnalyticsData(userId);
+        try {
+            return questAnalyticsClient.getAnalyticsData(userId);
+        } catch (Exception e) {
+            logger.warn("Failed to retrieve analytics data for user {}: {}", userId, e.getMessage());
+            Map<String, Object> emptyAnalytics = new HashMap<>();
+            emptyAnalytics.put("totalExperienceEarned", 0L);
+            emptyAnalytics.put("totalQuestsCompleted", 0);
+            emptyAnalytics.put("currentLevel", 1);
+            emptyAnalytics.put("lastUpdated", null);
+            return emptyAnalytics;
+        }
     }
 }
