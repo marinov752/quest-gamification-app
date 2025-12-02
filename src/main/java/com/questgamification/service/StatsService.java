@@ -4,7 +4,6 @@ import com.questgamification.domain.entity.Quest;
 import com.questgamification.domain.entity.QuestStatus;
 import com.questgamification.domain.entity.User;
 import com.questgamification.repository.QuestRepository;
-import com.questgamification.service.QuestAnalyticsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;

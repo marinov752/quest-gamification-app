@@ -1,6 +1,5 @@
 package com.questgamification.config;
 
-import com.questgamification.domain.entity.Role;
 import com.questgamification.domain.entity.User;
 import com.questgamification.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;

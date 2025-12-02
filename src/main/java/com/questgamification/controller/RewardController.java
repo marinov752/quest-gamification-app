@@ -4,8 +4,6 @@ import com.questgamification.domain.entity.Reward;
 import com.questgamification.domain.entity.User;
 import com.questgamification.service.RewardService;
 import com.questgamification.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/rewards")
 public class RewardController {
 
-    private static final Logger logger = LoggerFactory.getLogger(RewardController.class);
     private final RewardService rewardService;
     private final UserService userService;
 
