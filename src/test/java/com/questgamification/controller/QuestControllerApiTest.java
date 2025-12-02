@@ -3,7 +3,9 @@ package com.questgamification.controller;
 import com.questgamification.domain.entity.Quest;
 import com.questgamification.domain.entity.QuestStatus;
 import com.questgamification.domain.entity.QuestType;
+import com.questgamification.domain.entity.User;
 import com.questgamification.service.QuestService;
+import com.questgamification.service.RewardService;
 import com.questgamification.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,9 @@ import java.util.UUID;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@WebMvcTest(QuestController.class)
+@WebMvcTest(controllers = QuestController.class)
 @Import(TestSecurityConfig.class)
 class QuestControllerApiTest {
 
@@ -35,10 +38,20 @@ class QuestControllerApiTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private RewardService rewardService;
+
     @Test
     @WithMockUser
     void testGetCreateQuestForm() throws Exception {
-        mockMvc.perform(get("/quests/create"))
+        User mockUser = new User();
+        mockUser.setId(UUID.randomUUID());
+        mockUser.setUsername("user");
+        mockUser.setLevel(1);
+        when(userService.findByUsername("user")).thenReturn(java.util.Optional.of(mockUser));
+        when(rewardService.getAvailableRewards(1)).thenReturn(new java.util.ArrayList<>());
+        
+        mockMvc.perform(get("/quests/create").with(csrf()))
             .andExpect(status().isOk())
             .andExpect(view().name("quest-create"));
     }
@@ -56,9 +69,15 @@ class QuestControllerApiTest {
         quest.setStartDate(LocalDate.now());
         quest.setEndDate(LocalDate.now().plusDays(1));
 
+        User mockUser = new User();
+        mockUser.setId(UUID.randomUUID());
+        mockUser.setUsername("user");
+        when(userService.findByUsername("user")).thenReturn(java.util.Optional.of(mockUser));
         when(questService.findById(questId)).thenReturn(Optional.of(quest));
+        when(questService.getCheckInsForQuest(quest, mockUser)).thenReturn(new java.util.ArrayList<>());
+        when(questService.canCheckIn(quest, mockUser, LocalDate.now())).thenReturn(true);
 
-        mockMvc.perform(get("/quests/" + questId))
+        mockMvc.perform(get("/quests/" + questId).with(csrf()))
             .andExpect(status().isOk())
             .andExpect(view().name("quest-details"))
             .andExpect(model().attributeExists("quest"));

@@ -45,6 +45,7 @@ class UserServiceTest {
     void testRegisterUser_Success() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        when(userRepository.count()).thenReturn(1L); // Not the first user
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);

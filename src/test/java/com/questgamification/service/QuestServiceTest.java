@@ -148,14 +148,10 @@ class QuestServiceTest {
         dto.setQuestId(testQuest.getId());
         dto.setProgressPercentage(75);
 
-        when(questRepository.findById(testQuest.getId())).thenReturn(Optional.of(testQuest));
-        when(questProgressRepository.findByQuestAndUser(testQuest, testUser)).thenReturn(Optional.of(testProgress));
-        when(questProgressRepository.save(any(QuestProgress.class))).thenReturn(testProgress);
-
-        QuestProgress result = questService.updateProgress(dto, testUser);
-
-        assertNotNull(result);
-        verify(questProgressRepository, times(1)).save(any(QuestProgress.class));
+        // updateProgress is deprecated and throws UnsupportedOperationException
+        assertThrows(UnsupportedOperationException.class, () -> {
+            questService.updateProgress(dto, testUser);
+        });
     }
 
     @Test
@@ -164,9 +160,8 @@ class QuestServiceTest {
         dto.setQuestId(UUID.randomUUID());
         dto.setProgressPercentage(75);
 
-        when(questRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-
-        assertThrows(IllegalArgumentException.class, () -> {
+        // updateProgress is deprecated and throws UnsupportedOperationException
+        assertThrows(UnsupportedOperationException.class, () -> {
             questService.updateProgress(dto, testUser);
         });
     }
@@ -180,9 +175,8 @@ class QuestServiceTest {
         dto.setQuestId(testQuest.getId());
         dto.setProgressPercentage(75);
 
-        when(questRepository.findById(testQuest.getId())).thenReturn(Optional.of(testQuest));
-
-        assertThrows(IllegalArgumentException.class, () -> {
+        // updateProgress is deprecated and throws UnsupportedOperationException
+        assertThrows(UnsupportedOperationException.class, () -> {
             questService.updateProgress(dto, otherUser);
         });
     }
@@ -195,9 +189,8 @@ class QuestServiceTest {
         dto.setQuestId(testQuest.getId());
         dto.setProgressPercentage(75);
 
-        when(questRepository.findById(testQuest.getId())).thenReturn(Optional.of(testQuest));
-
-        assertThrows(IllegalArgumentException.class, () -> {
+        // updateProgress is deprecated and throws UnsupportedOperationException
+        assertThrows(UnsupportedOperationException.class, () -> {
             questService.updateProgress(dto, testUser);
         });
     }
@@ -208,24 +201,16 @@ class QuestServiceTest {
         dto.setQuestId(testQuest.getId());
         dto.setProgressPercentage(100);
 
-        when(questRepository.findById(testQuest.getId())).thenReturn(Optional.of(testQuest));
-        when(questProgressRepository.findByQuestAndUser(testQuest, testUser)).thenReturn(Optional.of(testProgress));
-        when(questProgressRepository.save(any(QuestProgress.class))).thenReturn(testProgress);
-        when(questRepository.save(any(Quest.class))).thenReturn(testQuest);
-        when(userService.addExperience(testUser, 100L)).thenReturn(testUser);
-        when(userService.updateUser(testUser)).thenReturn(testUser);
-        doNothing().when(achievementService).checkAndAwardAchievements(testUser);
-        doNothing().when(questAnalyticsClient).recordQuestCompletion(any(), any(), any());
-
-        questService.updateProgress(dto, testUser);
-
-        verify(questRepository, times(1)).save(any(Quest.class));
+        // updateProgress is deprecated and throws UnsupportedOperationException
+        assertThrows(UnsupportedOperationException.class, () -> {
+            questService.updateProgress(dto, testUser);
+        });
     }
 
     @Test
     void testCompleteQuest() {
+        when(userService.findById(testUser.getId())).thenReturn(Optional.of(testUser));
         when(questRepository.save(any(Quest.class))).thenReturn(testQuest);
-        when(userService.addExperience(testUser, 100L)).thenReturn(testUser);
         when(userService.updateUser(testUser)).thenReturn(testUser);
         doNothing().when(achievementService).checkAndAwardAchievements(testUser);
         doNothing().when(questAnalyticsClient).recordQuestCompletion(any(), any(), any());

@@ -29,7 +29,7 @@ class AuthControllerTest {
 
     @Test
     void testLoginPage() throws Exception {
-        mockMvc.perform(get("/login"))
+        mockMvc.perform(get("/login").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"));
     }

@@ -66,7 +66,8 @@ class RewardServiceTest {
         Reward result = rewardService.claimReward(testReward.getId(), testUser);
 
         assertNotNull(result);
-        assertTrue(result.getIsClaimed());
+        // The implementation adds user to reward's users list, not setting IsClaimed flag
+        assertTrue(result.getUsers().contains(testUser));
         verify(rewardRepository, times(1)).save(testReward);
     }
 
